@@ -95,12 +95,14 @@ pin-project-lite = "0.2.11"
 
 # Everything else is optional...
 bytes = { version = "1.0.0", optional = true }
-mio = { version = "0.8.9", optional = true, default-features = false }
+mio = { version = "0.8.9", optional = true, default-features = false, git = "https://github.com/second-state/wasi_mio.git", branch = "v0.8.x" }
 num_cpus = { version = "1.8.0", optional = true }
 parking_lot = { version = "0.12.0", features = ["nightly"], optional = true }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-socket2 = { version = "0.5.5", optional = true, features = [ "all" ] }
+socket2 = { path = "../../socket2", optional = true, features = [
+  "all",
+]}
 
 # Currently unstable. The API exposed by these features may be broken at any time.
 # Requires `--cfg tokio_unstable` to enable.
@@ -131,6 +133,13 @@ features = [
     "Win32_Security_Authorization",
 ]
 
+[target.'cfg(all(target_os = "wasi", tokio_unstable))'.dependencies]
+libc = { version = "0.2.149", optional = true }
+wasmedge_wasi_socket = "0.5"
+socket2 = { path = "../../socket2", optional = true, features = [
+  "all",
+]}
+
 [dev-dependencies]
 tokio-test = { version = "0.4.0", path = "../tokio-test" }
 tokio-stream = { version = "0.1", path = "../tokio-stream" }
@@ -139,7 +148,7 @@ mockall = "0.11.1"
 async-stream = "0.3"
 
 [target.'cfg(not(target_family = "wasm"))'.dev-dependencies]
-socket2 = "0.5.5"
+socket2 = { path = "../../socket2" }
 tempfile = "3.1.0"
 
 [target.'cfg(not(all(target_family = "wasm", target_os = "unknown")))'.dev-dependencies]
